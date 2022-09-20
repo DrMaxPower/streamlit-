@@ -8,3 +8,4 @@ plotly==5.10.0
 protobuf==3.20
 wordcloud==1.8.2.2
 wikipedia==1.4.0
+texthero==1.1.0
