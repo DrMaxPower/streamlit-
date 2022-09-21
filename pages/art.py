@@ -1,11 +1,13 @@
 import streamlit as st
 import os
+import pandas as pd
 import numpy as np
 import requests
+import wikipedia
+import texthero as hero
+from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
 from os import path
 from PIL import Image
-import wikipedia
-from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
 
 
 def valid_site(url):
@@ -20,7 +22,7 @@ def valid_site(url):
         return None
 
 
-def body_art():
+def body_art(text_clean=None):
     """ dispaly wordcloud """
 
     st.write('---')
@@ -29,6 +31,14 @@ def body_art():
 
     # Input from User
     wiki_website = st.text_input(label='Wiki Page', value='https://sv.wikipedia.org/wiki/Guld')
+    # if website is True
+    if valid_site(wiki_website):
+        pass
+    else:
+        st.error('Is this input page correct')
+
+    text = wikipedia.page(wiki_website[30:]).content
+
 
     # Adjusting the image
     col1, col2, col3, col4 = st.columns(4)
@@ -41,14 +51,8 @@ def body_art():
     with col4:
         bg_color = st.color_picker('Background Color')
 
-    # if website is True
-    if valid_site(wiki_website):
-        pass
-    else:
-        st.error('Is this input page correct')
-    
+
     # create wordcloud
-    text = wikipedia.page(wiki_website[30:]).content
     wordcloud = WordCloud(
         width=width, height=height, background_color=bg_color, colormap=colormap,
         collocations=False, stopwords=STOPWORDS).generate(text)
@@ -68,3 +72,13 @@ def body_art():
                 mime="image/png"
           )
         os.remove(f"{wiki_website[30:]}.png")
+
+    # Show plot Of top words
+    text = pd.Series(text)
+    text = hero.clean(text)[0]
+    st.info(
+        f'The text is **{len(text)}** words long and the word: \
+             **{(hero.top_words(pd.Series(text)).head(1).index[0])}**\
+                 is used **{hero.top_words(pd.Series(text))[0]}** times')
+
+

@@ -10,4 +10,5 @@ def body_hero():
     st.text(f"* This will be a Hero")
 
     txt = WikipediaPage('IPython').content
-    st.write(txt)
+    txt = pd.Series(data=txt)
+
